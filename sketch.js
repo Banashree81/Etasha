@@ -61,7 +61,7 @@ if(gameState === "start"){
         }
       }
     
-      if(score === 2){
+      if(score === 10){
         gameState = "over";
         laughSound.stop();
         HBDSound.play();
