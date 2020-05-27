@@ -8,6 +8,8 @@ var gameState = "start";
 
 var targetGroup, aduGroup;
 
+var ball1, ball2, ball3, ball4;
+
 function preload(){
   
   birthdayImg = loadImage("images/HBD_new.jpg");
@@ -33,52 +35,102 @@ function setup() {
   targetGroup = new Group();
   aduGroup = new Group();
   
+  ball1 = createSprite(10,10,20,20);
+  ball1.shapeColor = "yellow";
+  ball1.visible= false;
+  ball1.velocityX = 4;
+  ball1.velocityY = 5;
+  
+  ball2 = createSprite(10,490,20,20);
+  ball2.shapeColor = "red";
+  ball2.visible= false;
+  ball2.velocityX = 3;
+  ball2.velocityY = -4;
+  
+  ball3 = createSprite(490,490,20,20);
+  ball3.shapeColor = "purple";
+  ball3.visible= false;
+  ball3.velocityX = -4;
+  ball3.velocityY = -5;
+  
+  ball4 = createSprite(490,10,20,20);
+  ball4.shapeColor = "green";
+  ball4.visible= false;
+  ball4.velocityX = -6;
+  ball4.velocityY = 4;
+  
+  
 }
 
 function draw() {
   background(0);
   
-if(gameState === "start"){
-    generateBG();
-    text("Press SPACEBAR to start", 220, 450);
+  edges = createEdgeSprites();
+  
+  //display the balls in all game states except start
+  if(gameState !== "start"){
+  
+      ball1.visible = true;
+      ball2.visible = true;
+      ball3.visible = true;
+      ball4.visible = true;
+
+      ball1.bounceOff(edges);
+      ball2.bounceOff(edges);
+      ball3.bounceOff(edges);
+      ball4.bounceOff(edges);
   }
+  
+  if(gameState === "start"){
+  
+	//show the background of circles
+    generateBG();
+    text("Press SPACEBAR to start", 200, 450);
+  }
+  
   if(keyDown("space") && gameState === "start"){
+	//destroy the circles 
     targetGroup.destroyEach();
     gameState = "play";
   }
   
   if(gameState === "play"){
-      generateAdu();
-      generateObstacles();
-      textSize(14);
-      text("Score 10 for a surprise !", 100, 350);
-
-      for(var j =0; j <=aduGroup.maxDepth(); j++ ){
-        if( mousePressedOver(aduGroup.get(j))){
-            score = score +1;           
-            laughSound.play();
-            aduGroup.get(j).destroy();
-        }
-      }
-    
-      if(score === 10){
-        gameState = "over";
-        laughSound.stop();
-        HBDSound.play();
-      }
-    
-    }
-    
-    if(gameState === "over"){
-      var bg = createSprite(250,250,400,400);
-      bg.addImage(birthdayImg);
-           
-      etasha = createSprite(280,470,10,10);
-      etasha.addImage(etashaImg);
-      etasha.scale = 0.15;
-    }
-    
   
+	//display the various animations and Adu's image
+    generateObstacles();
+    generateAdu();
+	
+    textSize(14);
+    text("Click on Adu's image 10 times for a surprise !", 100, 350);
+
+	//Increase the score by 1 if mouse is clicked on Adu's image
+    for(var j =0; j <=aduGroup.maxDepth(); j++ ){
+		if( mousePressedOver(aduGroup.get(j))){
+           score = score +1;           
+           laughSound.play();
+           aduGroup.get(j).destroy();
+        }
+    }
+    
+	// display the HBD message when the score reaches 10
+    if(score === 10){
+       gameState = "over";
+       laughSound.stop();
+       HBDSound.play();
+    }
+    
+  }
+    
+  if(gameState === "over"){    
+      
+    var bg = createSprite(250,250,400,400);
+    bg.addImage(birthdayImg);
+          
+    etasha = createSprite(250, 460,10,10);
+    etasha.addImage(etashaImg);
+    etasha.scale = 0.2;
+  }
+      
   
   drawSprites();
   
@@ -100,18 +152,18 @@ function generateBG(){
  
 }
 
-
 function generateAdu(){
   
   if(World.frameCount%60 === 0){
     adu = createSprite( Math.round(random(10,490)),Math.round(random(10,390)),10,10);   
     adu.addImage(aduImg);
-    adu.scale = 0.1;
+    adu.scale = 0.17;
     adu.lifetime = 25;
     aduGroup.add(adu);
   }
 }
 function generateObstacles(){
+
   if(World.frameCount % 10 === 0){
     var obstacle = createSprite(random(10,495), random(10,495),10,10);
     obstacle.velocityX = random(-7, 7);
@@ -129,5 +181,5 @@ function generateObstacles(){
     }
    
    obstacle.lifetime = 75;
-  }
+ }
 }
